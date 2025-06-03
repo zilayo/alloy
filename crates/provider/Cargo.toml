@@ -14,9 +14,9 @@ exclude.workspace = true
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = [
-    "-Zunstable-options",
-    "--generate-link-to-definition",
-    "--show-type-layout",
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--show-type-layout",
 ]
 
 [lints]
@@ -37,7 +37,7 @@ alloy-rpc-types-debug = { workspace = true, optional = true }
 alloy-rpc-types-trace = { workspace = true, optional = true }
 alloy-rpc-types-txpool = { workspace = true, optional = true }
 alloy-rpc-types-engine = { workspace = true, optional = true, features = [
-    "serde",
+  "serde",
 ] }
 alloy-rpc-types = { workspace = true, optional = true }
 alloy-transport-http = { workspace = true, optional = true }
@@ -48,6 +48,8 @@ alloy-transport.workspace = true
 alloy-signer.workspace = true
 alloy-primitives.workspace = true
 alloy-sol-types.workspace = true
+alloy-dyn-abi.workspace = true
+alloy-json-abi.workspace = true
 
 alloy-chains.workspace = true
 async-stream.workspace = true
@@ -90,8 +92,8 @@ tracing-subscriber = { workspace = true, features = ["fmt"] }
 tempfile.workspace = true
 tower.workspace = true
 tower-http = { workspace = true, features = [
-    "set-header",
-    "sensitive-headers",
+  "set-header",
+  "sensitive-headers",
 ] }
 http-body-util.workspace = true
 http.workspace = true
@@ -104,10 +106,10 @@ jsonrpsee = { workspace = true, features = ["server"] }
 default = ["reqwest", "reqwest-default-tls"]
 pubsub = ["alloy-rpc-client/pubsub", "dep:alloy-pubsub"]
 reqwest = [
-    "dep:reqwest",
-    "dep:url",
-    "dep:alloy-transport-http",
-    "alloy-rpc-client/reqwest",
+  "dep:reqwest",
+  "dep:url",
+  "dep:alloy-transport-http",
+  "alloy-rpc-client/reqwest",
 ]
 hyper = ["dep:alloy-transport-http", "dep:url", "alloy-rpc-client/hyper"]
 hyper-tls = ["hyper", "alloy-transport-http/hyper-tls"]

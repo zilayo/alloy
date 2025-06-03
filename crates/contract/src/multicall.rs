@@ -24,16 +24,18 @@ impl<P: Provider<N>, C: SolCall, N: Network> MulticallItem for SolCallBuilder<P,
 #[cfg(test)]
 mod tests {
     use super::*;
+    use alloy_dyn_abi::DynSolValue;
     use alloy_primitives::{address, b256, U256};
     use alloy_provider::{
-        CallItem, CallItemBuilder, Failure, MulticallBuilder, Provider, ProviderBuilder,
+        CallItem, CallItemBuilder, DynCallItem, DynamicMulticallBuilder, Failure, MulticallBuilder,
+        Provider, ProviderBuilder,
     };
     use alloy_sol_types::sol;
     use DummyThatFails::DummyThatFailsInstance;
 
     sol! {
         #[derive(Debug, PartialEq)]
-        #[sol(rpc)]
+        #[sol(rpc, abi)]
         interface ERC20 {
             function totalSupply() external view returns (uint256 totalSupply);
             function balanceOf(address owner) external view returns (uint256 balance);
@@ -306,5 +308,38 @@ mod tests {
         assert_eq!(multicall.len(), 18);
         let res = multicall.aggregate().await.unwrap();
         assert_eq!(res.len(), 18);
+    }
+
+    #[tokio::test]
+    async fn test_dynamic_multicaller() {
+        let _ = tracing_subscriber::fmt::try_init();
+
+        let weth = address!("C02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2");
+        let provider = ProviderBuilder::new().connect_anvil_with_config(|a| a.fork(FORK_URL));
+
+        let total_supply_function =
+            ERC20::abi::functions().get("totalSupply").cloned().unwrap().first().unwrap().clone();
+
+        let balance_of_function =
+            ERC20::abi::functions().get("balanceOf").cloned().unwrap().first().unwrap().clone();
+
+        let balance_of_params =
+            vec![DynSolValue::Address(address!("d8dA6BF26964aF9D7eEd9e03E53415D37aA96045"))];
+
+        let balance_of_call_item = DynCallItem::new(weth, balance_of_params, balance_of_function);
+        let total_supply_call_item = DynCallItem::new(weth, Vec::new(), total_supply_function);
+
+        let dynamic_multicall = DynamicMulticallBuilder::new(provider.clone())
+            .add_call(balance_of_call_item)
+            .add_call(total_supply_call_item);
+
+        assert_eq!(dynamic_multicall.len(), 2);
+        let res = dynamic_multicall.aggregate3().await.unwrap();
+        assert_eq!(res.len(), 2);
+
+        for result in res {
+            let decoded = result.unwrap();
+            assert_eq!(decoded.len(), 1);
+        }
     }
 }

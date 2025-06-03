@@ -29,6 +29,9 @@ mod tuple;
 use tuple::TuplePush;
 pub use tuple::{CallTuple, Empty};
 
+mod dynamic_multicaller;
+pub use dynamic_multicaller::{DynCallItem, DynamicMulticallBuilder};
+
 /// Default address for the Multicall3 contract on most chains. See: <https://github.com/mds1/multicall>
 pub const MULTICALL3_ADDRESS: Address = address!("0xcA11bde05977b3631167028862bE2a173976CA11");
 

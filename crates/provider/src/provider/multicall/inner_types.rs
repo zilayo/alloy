@@ -174,4 +174,10 @@ pub enum MulticallError {
     /// Encountered when a transport error occurs while calling a multicall batch.
     #[error("Transport error: {0}")]
     TransportError(#[from] alloy_transport::TransportError),
+    /// Error decoding return data.
+    #[error("could not decode (dynamic)")]
+    DynamicDecodeError(alloy_dyn_abi::Error),
+    /// Error encoding calldata forn individual call.
+    #[error("could not encode dynamic multicall item (dynamic)")]
+    DynamicEncodeError(alloy_dyn_abi::Error),
 }
